@@ -1,0 +1,16 @@
+body{
+    min-height: 100vh;
+}
+.parent{
+    display:grid;
+    place-content: center;
+    grid-template-rows: 200px 200px 200px;
+    grid-template-columns: 200px 200px 200px;
+    column-gap: 0px;
+}
+
+.box{
+    border-width: 2px;
+    border-style: solid;
+    border-color: black;
+}
