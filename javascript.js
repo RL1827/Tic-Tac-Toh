@@ -1,181 +1,99 @@
-const gameboard = (() =>{
-    let player1 = "Player 1"
-    let player2 = "Player 2"
-    let current = player1
-    let board = [[0,0,0],[0,0,0],[0,0,0]]
+const gameboard = (() => {
+    let player1 = "Player 1";
+    let player2 = "Player 2";
+    let current = player1;
+    const board = [[0,0,0],[0,0,0],[0,0,0]];
+    let gameOver = false;
 
-    const add(name, position){
-        let positioning = position.split()
-        let row = positioning[0]
-        let column = positioning[1]
-        if (name == this.player1 && this.board[row][column] == 0){
-            this.board[row][column] = 1
-        } else if (name == this.player2 && this.board[row][column] == 0){
-            this.board[row][column] = 2
-        } else{
-            return false;
+    const turnEl = document.querySelector(".turn");   // ← moved up
+
+    const idToCell = {
+        one:   [0,0], two:   [0,1], three: [0,2],
+        four:  [1,0], five:  [1,1], six:   [1,2],
+        seven: [2,0], eight: [2,1], nine:  [2,2]
+    };
+
+    function start(p1Name, p2Name) {
+        player1 = p1Name;
+        player2 = p2Name;
+        current = player1;
+        board.forEach(row => row.fill(0));
+        gameOver = false;
+        render();
+        turnEl.textContent = `Current Turn: ${current}`;
+    }
+
+    function add(name, row, col) {
+        if (board[row][col] !== 0) return false;
+        if (name === player1) board[row][col] = 1;
+        else if (name === player2) board[row][col] = 2;
+        else return false;
+        return true;
+    }
+
+    const markOf = (name) => (name === player1 ? 1 : 2);
+
+    function checkRow(name, row) { return board[row].every(v => v === markOf(name)); }
+    function checkColumn(name, col) { return board.every(r => r[col] === markOf(name)); }
+    function checkMainDiagonal(name) {
+        const m = markOf(name);
+        return board[0][0] === m && board[1][1] === m && board[2][2] === m;
+    }
+    function checkAntiDiagonal(name) {
+        const m = markOf(name);
+        return board[0][2] === m && board[1][1] === m && board[2][0] === m;
+    }
+    function hasWon(name) {
+        for (let i = 0; i < 3; i++) {
+            if (checkRow(name, i) || checkColumn(name, i)) return true;
+        }
+        return checkMainDiagonal(name) || checkAntiDiagonal(name);
+    }
+    function isDraw() {
+        return board.every(row => row.every(v => v !== 0));
+    }
+
+    function switchTurn() {
+        current = current === player1 ? player2 : player1;
+        turnEl.textContent = `Current Turn: ${current}`;
+    }
+
+    function render() {
+        for (const [id, [r, c]] of Object.entries(idToCell)) {
+            const cell = document.getElementById(id);
+            cell.textContent = board[r][c] === 1 ? "X"
+                             : board[r][c] === 2 ? "O"
+                             : "";
         }
     }
 
-    function checkRow = (Playername, number) => {
-        let check = 0 
-        let counter = 0
-        let row = false
-        let checklist = []
-        let wincounter = 0
-        if (Playername == player1){
-            check = 1
-            counter = 2
-        } else if (Playername == player2){
-            check = 2
-            counter = 1
-        } else{
-            console.log("Unknown Player")
-        }
+    document.querySelector(".parent").addEventListener("click", (event) => {
+        if (gameOver) return;
+        const cell = event.target.closest(".box");
+        if (!cell || !idToCell[cell.id]) return;
+        const [row, col] = idToCell[cell.id];
+        if (!add(current, row, col)) return;
+        render();
+        if (hasWon(current)) { gameOver = true; turnEl.textContent = `${current} wins!`; return; }
+        if (isDraw())        { gameOver = true; turnEl.textContent = "Draw!"; return; }
+        switchTurn();
+    });
 
-        for (let i = 0; i < 3; i++){
-            if (board[number][i] == check){
-                wincounter += 1
-            }
+    return { start };   // ← FIX: return an object, not the function
+})();
 
-            if (wincounter == 3){
-                return true
-            }
-            checkList.push(board[number][i])
-        }
-        if (wincounter == 3){
-            return true
-        }
+function showScreen(id) {
+    document.querySelectorAll(".screen").forEach(s => s.classList.remove("active"));
+    document.getElementById(id).classList.add("active");
+}
 
-        if (checkList.includes(check) && checkList.includes(counter)){
-            return 3
-        }
-        return false
-    }
+document.getElementById("start-btn").addEventListener("click", () => {
+    const p1 = document.getElementById("p1-name").value.trim() || "Player 1";
+    const p2 = document.getElementById("p2-name").value.trim() || "Player 2";
+    gameboard.start(p1, p2);
+    showScreen("game-screen");
+});
 
-    function checkColumn(Playername, number){
-        let check = 0 
-        let counter = 0
-        let row = false
-        let checklist = []
-        let wincounter = 0
-        if (Playername == player1){
-            check = 1
-            counter = 2
-        } else if (Playername == player2){
-            check = 2
-            counter = 1
-        } else{
-            console.log("Unknown Player")
-        }
-
-        for (let i = 0; i < 3; i++){
-            if (board[i][number] == check){
-                wincounter += 1
-            }
-
-            if (wincounter == 3){
-                return true
-            }
-            checkList.push(board[i][number])
-        }
-        if (wincounter == 3){
-            return true
-        }
-
-        if (checkList.includes(check) && checkList.includes(counter)){
-            return 3
-        }
-        return false
-    }
-
-    function checkFirstDiagonal(Playername){
-        let check = 0 
-        let counter = 0
-        let row = false
-        let checklist = []
-        let wincounter = 0
-        if (Playername == player1){
-            check = 1
-            counter = 2
-        } else if (Playername == player2){
-            check = 2
-            counter = 1
-        } else{
-            console.log("Unknown Player")
-        }
-
-        for (let i = 0, j = 2; i < 3, j >= 0; i++, j--){
-            if (board[i][j] == check){
-                wincounter += 1
-            }
-
-            if (wincounter == 3){
-                return true
-            }
-            checkList.push(board[i][j])
-        }
-
-        if (wincounter == 3){
-                return true
-        }
-
-        if (checkList.includes(check) && checkList.includes(counter)){
-            return 3
-        }
-        return false
-    }
-    
-    function switchTurn(current){
-        if (current == player1){
-            current == player2
-        } else{
-            current == player1
-        }
-        let switching = document.querySelector(".turn")
-        switching.textContent= `Current Turn: ${current}`
-    }
-
-    let listening = document.querySelector(".box")
-    listening.addEventListener("click", ()=>{
-        recordCounter = 0
-        if current == player1{
-            recordCounter = 1
-        } else{
-            recordCounter = 2
-        }
-        let elements = event.target.elements
-        for (let target of elements){
-            switch(target.id){
-                case "one":
-                    board[0][0] = recordCounter
-                    break
-                case "two":
-                    board[0][1] = recordCounter
-                    break
-                case "three":
-                    board[0][2] = recordCounter
-                    break
-                case "four":
-                    board[1][0] = recordCounter
-                    break
-                case "five":
-                    board[1][1] = recordCounter
-                    break
-                case "six":
-                    board[1][2] = recordCounter
-                    break
-                case "seven":
-                    board[2][0] = recordCounter
-                    break
-                case "eight":
-                    board[2][1] = recordCounter
-                    break
-                case "nine":
-                    board[2][2] = recordCounter
-                    break
-            }
-        }
-    })
-
+document.getElementById("restart-btn").addEventListener("click", () =>{
+    showScreen("start-screen");
 })

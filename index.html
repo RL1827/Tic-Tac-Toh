@@ -4,19 +4,33 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Console</title>
     <link rel="stylesheet" href="style.css">
+    <script src="javascript.js" defer></script>
 </head>
 
 <body>
-    <h2 class="turn"></h2>
-    <div class="parent">
-        <div class="box" id="one"></div>
-        <div class="box" id="two"></div>
-        <div class="box" id="three"></div>
-        <div class="box" id="four"></div>
-        <div class="box" id="five"></div>
-        <div class="box" id="six"></div>
-        <div class="box" id="seven"></div>
-        <div class="box" id="eight"></div>
-        <div class="box" id="nine"></div>
-    </div>
+    <section id="start-screen" class="active screen">
+        <h1>Tic Tac Toe</h1>
+
+        <label>Player 1 name: <input id="p1-name" value="Player 1"></label>
+
+        <label>Player 2 name: <input id="p2-name" value="Player 2"></label>
+
+        <button id="start-btn">Start Game</button>
+    </section>
+
+    <section id="game-screen" class="screen">
+        <h2 class="turn"></h2>
+        <div class="parent">
+            <div class="box" id="one"></div>
+            <div class="box" id="two"></div>
+            <div class="box" id="three"></div>
+            <div class="box" id="four"></div>
+            <div class="box" id="five"></div>
+            <div class="box" id="six"></div>
+            <div class="box" id="seven"></div>
+            <div class="box" id="eight"></div>
+            <div class="box" id="nine"></div>
+        </div>
+        <button id="restart-btn">Restart</button>
+    </section>
 </body>

@@ -10,7 +10,20 @@ body{
 }
 
 .box{
+    display: grid;
     border-width: 2px;
     border-style: solid;
     border-color: black;
+    font-size: 100px;
+    font-weight: bold;
+    align-items: center;
+    justify-content: center;
+}
+
+.screen{
+    display: none;
+}
+
+.screen.active{
+    display: block;
 }
